@@ -4,17 +4,18 @@ export default {
   async fetch(request, env) {
     const client_id = env.CLIENT_ID;
     const client_secret = env.CLIENT_SECRET;
+    const url = new URL(request.url);
+    const params = url.searchParams;
 
-    const { pathname, searchParams: params } = new URL(request.url);
-
-    if (pathname === '/auth') {
+    if (url.pathname === '/auth') {
       return Response.redirect(
         `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=repo,user`,
         302
       );
     }
 
-    if (pathname === '/callback') {
+    // GitHub bisa balik ke /callback atau /?code=... — handle dua-duanya
+    if (url.pathname === '/callback' || params.has('code')) {
       try {
         const code = params.get('code');
         const response = await fetch('https://github.com/login/oauth/access_token', {
@@ -27,8 +28,7 @@ export default {
           body: JSON.stringify({ client_id, client_secret, code }),
         }).then((res) => res.json());
 
-        const loginResponse = decapCMSLoginScript(response.access_token);
-        return new Response(loginResponse, {
+        return new Response(decapCMSLoginScript(response.access_token), {
           status: 201,
           headers: { 'Content-Type': 'text/html;charset=UTF-8' },
         });
