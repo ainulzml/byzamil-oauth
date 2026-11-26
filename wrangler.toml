@@ -1,7 +1,5 @@
-name = "decap-cms-github-oauth-api"
+name = "byzamil-oauth"
 main = "index.ts"
-
 compatibility_date = "2023-11-11"
-
-account_id = "c192ee4c911d964935f8f53ac8399ae9"
+account_id = "ffbefeaf1378e44f57ab10ac3a6a5e53"
 workers_dev = true
